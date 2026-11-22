@@ -5,6 +5,7 @@ test('entry, orb, image projects, stack, contact and search',async({page})=>{
  await page.getByRole('button',{name:/enter silently/i}).click();
  await expect(page.getByRole('heading',{name:/Engineering ideas/})).toBeVisible();
  await expect(page.getByRole('button',{name:'Talk to the YZR 3D orb'})).toBeVisible();
+ await expect(page.locator('.b-orb-canvas canvas')).toBeVisible({timeout:20000});
  await page.getByRole('button',{name:'Open SHIFAA project details'}).click();
  await expect(page.getByRole('dialog',{name:'SHIFAA'})).toBeVisible();
  await page.getByRole('button',{name:'Close project details'}).click();

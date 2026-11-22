@@ -30,7 +30,7 @@ export default function Orb({speaking=false}:{speaking?:boolean}){
   const shell=new T.MeshPhysicalMaterial({color:0x10141c,metalness:.88,roughness:.18,clearcoat:1,clearcoatRoughness:.12,envMapIntensity:1.2});
   orb.add(new T.Mesh(new T.SphereGeometry(1.55,80,56),shell));
   const seam=new T.Mesh(new T.TorusGeometry(1.55,.009,8,100),new T.MeshStandardMaterial({color:0x151e2c,metalness:.8,roughness:.25}));seam.rotation.x=Math.PI/2;orb.add(seam);
-  const face=new T.Group();face.position.z=1.48;orb.add(face);
+  const face=new T.Group();face.position.z=1.565;orb.add(face);
   const eyeMat=new T.MeshBasicMaterial({color:0x8eddff});
   const eyes=[-.31,.31].map(x=>{const e=new T.Mesh(new RoundedBoxGeometry(.17,.55,.05,5,.07),eyeMat);e.position.x=x;face.add(e);return e;});
   const haloCanvas=document.createElement('canvas');haloCanvas.width=128;haloCanvas.height=128;const ctx=haloCanvas.getContext('2d');
@@ -41,7 +41,7 @@ export default function Orb({speaking=false}:{speaking?:boolean}){
   const starsGeo=new T.BufferGeometry();const positions=new Float32Array(420*3),sizes=new Float32Array(420),phases=new Float32Array(420);
   for(let i=0;i<420;i++){const a=i*2.39996323,rad=2.35+((i*37)%100)/100*1.7;positions[i*3]=Math.cos(a)*rad;positions[i*3+1]=Math.sin(a)*rad*.70;positions[i*3+2]=Math.sin(i*1.723)*1.9;sizes[i]=1.0+(i%7)*.23;phases[i]=i*.79;}
   starsGeo.setAttribute('position',new T.BufferAttribute(positions,3));starsGeo.setAttribute('size',new T.BufferAttribute(sizes,1));starsGeo.setAttribute('phase',new T.BufferAttribute(phases,1));
-  const starsMat=new T.ShaderMaterial({uniforms:{time:{value:0},pixelRatio:{value:Math.min(devicePixelRatio,1.8)}},vertexShader:'attribute float size;attribute float phase;uniform float time;uniform float pixelRatio;varying float glow;void main(){vec3 p=position;p.y+=sin(time*.65+phase)*.06;vec4 mv=modelViewMatrix*vec4(p,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(size*pixelRatio*9.0/-mv.z,1.0,5.0);glow=.3+.7*pow(.5+.5*sin(time*1.5+phase),2.0);}',fragmentShader:'varying float glow;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.04,d)*glow*.65;gl_FragColor=vec4(.58,.8,1.0,a);}',transparent:true,depthWrite:false,blending:T.AdditiveBlending});
+  const starsMat=new T.ShaderMaterial({uniforms:{time:{value:0},pixelRatio:{value:Math.min(devicePixelRatio,1.8)}},vertexShader:'attribute float size;attribute float phase;uniform float time;uniform float pixelRatio;varying float glow;void main(){vec3 p=position;p.y+=sin(time*.65+phase)*.06;vec4 mv=modelViewMatrix*vec4(p,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(size*pixelRatio*9.0/-mv.z,1.0,5.0);glow=.3+.7*pow(.5+.5*sin(time*1.5+phase),2.0);}',fragmentShader:'varying float glow;void main(){float d=length(gl_PointCoord-.5);float a=(1.0-smoothstep(.04,.5,d))*glow*.65;gl_FragColor=vec4(.58,.8,1.0,a);}',transparent:true,depthWrite:false,blending:T.AdditiveBlending});
   const stars=new T.Points(starsGeo,starsMat);scene.add(stars);
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let targetX=0,targetY=0,frame=0,visible=true;
   const resize=()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.position.z=camera.aspect<1?11.9:9.9;camera.updateProjectionMatrix();renderer.render(scene,camera)};
