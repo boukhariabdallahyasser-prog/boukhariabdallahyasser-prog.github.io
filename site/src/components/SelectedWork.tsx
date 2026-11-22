@@ -6,8 +6,8 @@ const flow=[
 ];
 export default function SelectedWork(){
  const [step,setStep]=useState(0);
- return <section id="work" className="content work-section"><div className="wrap">
- <div className="sectionhead"><span className="mono accent">02 / Selected work</span><div><h2>Making connections<br/>work in practice.</h2><p>Two projects at the intersection of software, services and real needs.</p></div></div>
+ return <section id="work" className="b-section work-section"><div className="b-shell">
+ <div className="b-section-title"><span>03 / PROJECTS</span><h2>Selected <em>work.</em></h2><p>Two real projects. Different problems, connected thinking.</p></div>
  <article className="feature-project">
    <div className="feature-label mono"><span>01 / Product exploration</span><span>Health technology</span></div>
    <div className="shifaa-cover">
