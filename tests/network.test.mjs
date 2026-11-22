@@ -1,6 +1,4 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { nodes, getNode } from '../site/src/data/network.ts';
-import { readFileSync } from 'node:fs';
-test('network has six distinct labelled nodes',()=>{assert.equal(nodes.length,6);assert.equal(new Set(nodes.map(n=>n.id)).size,6);for(const n of nodes){assert.equal(getNode(n.id),n);assert.ok(n.label&&n.description)}});
-test('network targets are mounted sections',()=>{const files=['App.tsx','components/Stack.tsx','components/SelectedWork.tsx','components/Contact.tsx'];const source=files.map(f=>readFileSync(new URL('../site/src/'+f,import.meta.url),'utf8')).join('');for(const n of nodes)assert.ok(source.includes('id="'+n.href.slice(1)+'"'),n.href)});
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
+const source=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+test('YZR identity and entry are connected to the application',()=>{const app=source('site/src/App.tsx');assert.ok(app.includes('<Entrance open={!entered}'));assert.ok(app.includes('<Logo className="nav-yzr-logo"'));assert.ok(!app.includes('SPIDER'));assert.ok(!app.includes('<Network'));assert.ok(source('site/public/yzr-logo.svg').includes('<path'));});
+test('portfolio navigation has real sections',()=>{const app=source('site/src/App.tsx');const mounted=[app,...['Hero','Capabilities','Stack','SelectedWork','Contact'].map(x=>source('site/src/components/'+x+'.tsx'))].join('');for(const [,id] of app.matchAll(/href="#([^"]+)"/g))assert.ok(mounted.includes('id="'+id+'"'),id);});

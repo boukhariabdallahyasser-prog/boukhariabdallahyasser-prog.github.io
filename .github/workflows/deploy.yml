@@ -1,4 +1,4 @@
-name: Deploy SPIDER
+name: Deploy YZR
 on:
   push:
     branches: [main]

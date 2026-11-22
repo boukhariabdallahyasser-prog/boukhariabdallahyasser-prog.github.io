@@ -14,13 +14,13 @@ export function answer(q:string):Message{
  return {role:'guide',text:'I am a portfolio guide, not a general-purpose AI. Ask me about SHIFAA, Bac-pedia, skills, studies, design or contact.'};
 }
 export default function PortfolioGuide({open,onClose,onSpeak}:{open:boolean;onClose:()=>void;onSpeak:()=>void}){
- const [messages,setMessages]=useState<Message[]>([{role:'guide',text:"Hi! I'm SPIDER, Abdallah's portfolio guide. What would you like to explore?"}]);
+ const [messages,setMessages]=useState<Message[]>([{role:'guide',text:"Hi! I'm YZR, Abdallah's portfolio guide. What would you like to explore?"}]);
  const [input,setInput]=useState('');const end=useRef<HTMLDivElement>(null);const dialog=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const d=dialog.current;if(!d)return;if(open&&!d.open)d.showModal();else if(!open&&d.open)d.close()},[open]);
  useEffect(()=>{if(open)end.current?.scrollIntoView({block:'nearest'})},[messages,open]);
  function send(text:string){const q=text.trim();if(!q)return;setMessages(m=>[...m,{role:'visitor',text:q},answer(q)]);setInput('');onSpeak();}
  return <dialog ref={dialog} className="b-guide" onCancel={onClose} onClick={e=>{if(e.target===dialog.current)onClose()}}>
-  <div className="b-guide-head"><span className="b-mini-orb" aria-hidden="true"><i/><i/></span><div><b>SPIDER</b><small>Portfolio guide · Local FAQ</small></div><button type="button" onClick={onClose} aria-label="Close guide">×</button></div>
+  <div className="b-guide-head"><span className="b-mini-orb" aria-hidden="true"><i/><i/></span><div><b>YZR</b><small>Portfolio guide · Local FAQ</small></div><button type="button" onClick={onClose} aria-label="Close guide">×</button></div>
   <div className="b-messages" role="log" aria-live="polite">{messages.map((m,i)=><div className={'b-msg '+m.role} key={i}><p>{m.text}</p>{m.link&&<a href={m.link} onClick={m.link.startsWith('#')?onClose:undefined}>{m.label} ↗</a>}</div>)}<div ref={end}/></div>
   <div className="b-questions">{questions.map(q=><button type="button" key={q} onClick={()=>send(q)}>{q}</button>)}</div>
   <form className="b-chat-form" onSubmit={e=>{e.preventDefault();send(input)}}><input autoFocus value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask about the portfolio…" aria-label="Question" maxLength={300}/><button type="submit" disabled={!input.trim()} aria-label="Send question">↗</button></form>
