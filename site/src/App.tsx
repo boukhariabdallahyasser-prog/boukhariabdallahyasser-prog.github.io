@@ -1,4 +1,5 @@
 import Hero from './components/Hero';
+import Network from './components/Network';
 import About from './components/About';
 import SelectedWork from './components/SelectedWork';
 import Skills from './components/Skills';
@@ -8,7 +9,7 @@ import Learning from './components/Learning';
 import Contact from './components/Contact';
 export default function App(){return (<>
 <a className="skip" href="#main">Skip to content</a>
-<header><div className="wrap nav"><a className="brand" href="#main" aria-label="Abdallah Boukhari Yasser home"><svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M3 3 18 18 33 3M3 33 18 18 33 33M3 3V33M33 3V33" stroke="#86d9e8" strokeWidth="1.6"/><circle cx="18" cy="18" r="3.5" fill="#86d9e8"/></svg><span>ABY.<small>SPIDER / Personal atlas</small></span></a><nav aria-label="Main"><a href="#about">About</a><a href="#work">Work</a><a href="#skills">Index</a><a href="#contact">Contact</a></nav><a className="nav-contact" href="https://github.com/boukhariabdallahyasser-prog">GitHub ↗</a></div></header>
-<main id="main"><Hero/><SelectedWork/><About/><Skills/><Experience/><Creative/><Learning/><Contact/></main>
+<header className="reference-header"><div className="reference-nav"><a className="reference-brand" href="#main" aria-label="Home"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M10 11l5 5m0-5-5 5m11-5 5 5m0-5-5 5M10 22q8 10 16 0" fill="none" stroke="currentColor" strokeWidth="1.5"/></svg><span>Abdallah <b>— Portfolio</b></span></a><nav aria-label="Main"><a href="#about">About</a><a href="#work">Work</a><a href="#contact">Contact</a></nav></div></header>
+<main id="main"><Hero/><About/><SelectedWork/><section className="content" id="network"><div className="wrap"><div className="sectionhead"><span className="mono accent">SPIDER / Network</span><h2>Everything is connected.</h2></div><Network/></div></section><Skills/><Experience/><Creative/><Learning/><Contact/></main>
 <div className="wrap"><footer className="mono muted"><span>© Abdallah Boukhari Yasser</span><span>Designed around connections.</span><a href="#main">Back to top ↑</a></footer></div>
 </>);}
