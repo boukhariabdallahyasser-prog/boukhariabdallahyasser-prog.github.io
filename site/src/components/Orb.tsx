@@ -37,6 +37,7 @@ export default function Orb({speaking=false}:{speaking?:boolean}){
   if(ctx){const g=ctx.createRadialGradient(64,64,1,64,64,64);g.addColorStop(0,'rgba(99,196,255,.23)');g.addColorStop(.4,'rgba(62,165,255,.11)');g.addColorStop(1,'rgba(0,80,255,0)');ctx.fillStyle=g;ctx.fillRect(0,0,128,128);}
   const glowTex=new T.CanvasTexture(haloCanvas);
   for(const x of [-.31,.31]){const g=new T.Sprite(new T.SpriteMaterial({map:glowTex,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));g.position.set(x,0,.06);g.scale.set(.95,1.15,1);face.add(g);}
+  const outerGlow=new T.Mesh(new T.SphereGeometry(1.565,56,40),new T.ShaderMaterial({uniforms:{tint:{value:new T.Color(0x80cfff)}},vertexShader:'varying vec3 n;varying vec3 v;void main(){vec4 p=modelViewMatrix*vec4(position,1.0);n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;}',fragmentShader:'uniform vec3 tint;varying vec3 n;varying vec3 v;void main(){float f=pow(1.0-max(dot(normalize(n),normalize(v)),0.0),3.3);gl_FragColor=vec4(tint,f*.32);}',transparent:true,depthWrite:false,blending:T.AdditiveBlending}));orb.add(outerGlow);
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let targetX=0,targetY=0,frame=0,visible=true;
   const resize=()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.position.z=camera.aspect<1?11.9:9.9;camera.updateProjectionMatrix();renderer.render(scene,camera)};
   const ro=new ResizeObserver(resize);ro.observe(el);resize();
