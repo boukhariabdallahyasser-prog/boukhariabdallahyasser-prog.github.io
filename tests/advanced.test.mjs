@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+test('advanced motion, search, and 3D layers are actually integrated',()=>{const app=read('site/src/App.tsx'),orb=read('site/src/components/Orb.tsx'),nav=read('site/src/components/QuickNav.tsx'),motion=read('site/src/components/CinematicMotion.tsx');assert.ok(app.includes('<CinematicMotion/>')&&app.includes('<QuickNav'));assert.ok(orb.includes('new T.Points')&&orb.includes('starsMat.uniforms.time.value'));assert.ok(nav.includes('new Fuse')&&motion.includes('ScrollTrigger'));});

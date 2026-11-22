@@ -1,6 +1,6 @@
 {
   "name": "yzr-portfolio",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,13 +12,17 @@
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview",
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "motion": "^12.23.12",
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "gsap": "^3.13.0",
+    "fuse.js": "^7.1.0",
+    "lucide-react": "^0.468.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.10",
@@ -26,6 +30,7 @@
     "@vitejs/plugin-react": "^5.0.2",
     "typescript": "~5.9.2",
     "vite": "^7.1.5",
-    "@types/three": "^0.180.0"
+    "@types/three": "^0.180.0",
+    "@playwright/test": "^1.55.0"
   }
 }

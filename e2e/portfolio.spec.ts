@@ -1,0 +1,28 @@
+import {test,expect} from '@playwright/test';
+test('entry, orb, image projects, stack, contact and search',async({page})=>{
+ await page.goto('/');
+ await expect(page.getByRole('dialog',{name:'Abdallah Boukhari Yasser'})).toBeVisible();
+ await page.getByRole('button',{name:/enter silently/i}).click();
+ await expect(page.getByRole('heading',{name:/Engineering ideas/})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Talk to the YZR 3D orb'})).toBeVisible();
+ await page.getByRole('button',{name:'Open SHIFAA project details'}).click();
+ await expect(page.getByRole('dialog',{name:'SHIFAA'})).toBeVisible();
+ await page.getByRole('button',{name:'Close project details'}).click();
+ await page.getByRole('button',{name:'Design & 3D',exact:true}).click();
+ await expect(page.locator('.tech-tile').filter({hasText:'GSAP'})).toBeVisible();
+ await page.getByRole('button',{name:/compose a message/i}).click();
+ await expect(page.getByRole('dialog',{name:"Let's connect."})).toBeVisible();
+ await page.getByRole('textbox',{name:'Your name'}).fill('Test visitor');
+ await page.getByRole('textbox',{name:"What's on your mind?"}).fill('A project idea');
+ await page.getByRole('button',{name:'Close contact composer'}).click();
+ await page.getByRole('button',{name:'Search portfolio',exact:true}).click();
+ await page.getByRole('textbox',{name:'Search sections'}).fill('technology');
+ await expect(page.locator('.quick-results button').filter({hasText:'Technology stack'})).toBeVisible();
+ await page.getByRole('button',{name:'Close search'}).click();
+ await page.getByRole('button',{name:'Open portfolio guide'}).click();
+ await page.getByRole('button',{name:'What are your projects?'}).click();
+ await expect(page.getByRole('log')).toContainText('Two featured projects');
+ await page.getByRole('button',{name:'Close guide'}).click();
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2);
+ expect(overflow).toBe(false);
+});
