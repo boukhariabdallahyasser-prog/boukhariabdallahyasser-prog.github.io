@@ -38,13 +38,13 @@ export default function Orb({speaking=false}:{speaking?:boolean}){
   const glowTex=new T.CanvasTexture(haloCanvas);
   for(const x of [-.31,.31]){const g=new T.Sprite(new T.SpriteMaterial({map:glowTex,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));g.position.set(x,0,.06);g.scale.set(.95,1.15,1);face.add(g);}
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let targetX=0,targetY=0,frame=0,visible=true;
-  const resize=()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.position.z=camera.aspect<1?12.5:10.6;camera.updateProjectionMatrix();renderer.render(scene,camera)};
+  const resize=()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.position.z=camera.aspect<1?11.9:9.9;camera.updateProjectionMatrix();renderer.render(scene,camera)};
   const ro=new ResizeObserver(resize);ro.observe(el);resize();
   const io=new IntersectionObserver(([e])=>{visible=e.isIntersecting});io.observe(el);
-  const move=(e:PointerEvent)=>{if(e.pointerType==='mouse'){targetX=(e.clientX/innerWidth-.5)*.55;targetY=(e.clientY/innerHeight-.5)*.38;}};
+  const move=(e:PointerEvent)=>{if(e.pointerType==='mouse'){targetX=(e.clientX/innerWidth-.5)*.78;targetY=(e.clientY/innerHeight-.5)*.52;}};
   const reset=()=>{targetX=targetY=0};window.addEventListener('pointermove',move);document.addEventListener('pointerleave',reset);
-  const start=performance.now();
-  function tick(now:number){frame=requestAnimationFrame(tick);if(!visible||reduced)return;const t=(now-start)/1000;orb.rotation.y+=(targetX-orb.rotation.y)*.045;orb.rotation.x+=(targetY-orb.rotation.x)*.045;orb.position.y=Math.sin(t*1.35)*.075;framework.rotation.y=t*.15;framework.rotation.z=Math.sin(t*.45)*.12;facets.rotation.z=t*.09;facets.children.forEach((o,i)=>{o.rotation.y=t*.32+i;});const blink=t%4.8;const scale=blink<.16?Math.max(.07,Math.abs(blink-.08)/.08):talk.current?.65+.35*Math.abs(Math.sin(t*11)):1;eyes.forEach(e=>e.scale.y=scale);renderer.render(scene,camera);}
+  const start=performance.now(), targetScale=new T.Vector3();
+  function tick(now:number){frame=requestAnimationFrame(tick);if(!visible||reduced)return;const t=(now-start)/1000;orb.rotation.y+=(targetX-orb.rotation.y)*.045;orb.rotation.x+=(targetY-orb.rotation.x)*.045;orb.position.y=Math.sin(t*1.35)*.12;orb.scale.lerp(targetScale.setScalar(talk.current?1.055:1),.035);framework.rotation.y=t*.15;framework.rotation.z=Math.sin(t*.45)*.12;facets.rotation.z=t*.12;facets.children.forEach((o,i)=>{o.rotation.y=t*.42+i;const a=i*Math.PI/3;const r=2.27+.14*Math.sin(t*1.15+i);o.position.x=Math.cos(a)*r;o.position.y=Math.sin(a)*(1.68+.12*Math.cos(t+i));});const blink=t%4.8;const scale=blink<.16?Math.max(.07,Math.abs(blink-.08)/.08):talk.current?.65+.35*Math.abs(Math.sin(t*11)):1;eyes.forEach(e=>e.scale.y=scale);renderer.render(scene,camera);}
   frame=requestAnimationFrame(tick);setReady(true);
   return ()=>{cancelAnimationFrame(frame);ro.disconnect();io.disconnect();window.removeEventListener('pointermove',move);document.removeEventListener('pointerleave',reset);const mats=new Set<T.Material>();scene.traverse(o=>{if(o instanceof T.Mesh){o.geometry.dispose();(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>mats.add(m))}else if(o instanceof T.Sprite)mats.add(o.material)});mats.forEach(m=>m.dispose());glowTex.dispose();env.dispose();envGen.dispose();renderer.dispose();renderer.domElement.remove()};
  },[]);

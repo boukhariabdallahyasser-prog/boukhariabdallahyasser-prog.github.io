@@ -1,31 +1,25 @@
-import { useState } from 'react';
-const flow=[
- {name:'Referral',role:'Referring doctor',description:'Send a referral and preserve the relevant medical context for the next clinician.'},
- {name:'Appointment',role:'Patient & care team',description:'Coordinate the next visit and communicate the appointment details.'},
- {name:'Follow-up',role:'Treating clinician',description:'Keep follow-up tasks, notifications and medical files connected to the care journey.'}
-];
+import { useEffect,useRef,useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
+import { projects, type Project } from '../data/projects';
 export default function SelectedWork(){
- const [step,setStep]=useState(0);
+ const [selected,setSelected]=useState<Project|null>(null);const dialog=useRef<HTMLDialogElement>(null);const trigger=useRef<HTMLButtonElement|null>(null);
+ const reduce=useReducedMotion();
+ useEffect(()=>{const d=dialog.current;if(!d)return;if(selected&&!d.open){d.showModal();d.scrollTop=0}else if(!selected&&d.open)d.close()},[selected]);
+ function close(){setSelected(null);requestAnimationFrame(()=>trigger.current?.focus())}
  return <section id="work" className="b-section work-section"><div className="b-shell">
- <div className="b-section-title"><span>03 / PROJECTS</span><h2>Selected <em>work.</em></h2><p>Two real projects. Different problems, connected thinking.</p></div>
- <article className="feature-project">
-   <div className="feature-label mono"><span>01 / Product exploration</span><span>Health technology</span></div>
-   <div className="shifaa-cover">
-     <div className="cover-meta mono"><span>SHIFAA / Connected care</span><span>Service blueprint — Concept</span></div>
-     <div className="cover-brand"><div><span className="health-mark" aria-hidden="true">✳</span><strong>shifaa<span>.</span></strong></div><span className="arabic" lang="ar" dir="rtl">شفاء</span></div>
-     <div className="care-map">
-       <div className="care-map-head"><span className="mono">A patient's journey</span><span className="mono">Select a stage</span></div>
-       <div className="care-steps">{flow.map((f,i)=><button key={f.name} type="button" className={i===step?'active':''} aria-pressed={i===step} onClick={()=>setStep(i)}><span className="mono">0{i+1}</span><b>{f.name}</b><small>{f.role}</small></button>)}</div>
-       <div className="care-detail" aria-live="polite"><span className="care-pulse" aria-hidden="true"/><p>{flow[step].description}</p></div>
-     </div>
-     <div className="cover-meta mono"><span>Doctor ↔ Patient ↔ Care team</span><span>Conceptual visualization, not a product screenshot</span></div>
-   </div>
-   <div className="feature-description"><div><span className="mono accent">SHIFAA</span><h3>Care doesn't end<br/>at the first visit.</h3></div><div><p>A student product-development project exploring how doctors and patients can stay connected through referrals, appointments, medical files, notifications and follow-ups.</p><details className="case"><summary>Read case study notes</summary><div className="casebody"><div><h4>The problem</h4><p>Care transitions involve multiple actors and scattered information.</p></div><div><h4>Proposed solution</h4><p>A coordinated workflow that keeps the next step and related context visible.</p></div><div><h4>Design considerations</h4><p>Distinct clinician and patient views, clear next actions and continuity of records.</p></div><div><h4>Project documentation</h4><p>Individual contributions, implementation details and outcome metrics have not been supplied.</p></div></div></details></div></div>
- </article>
- <article className="feature-project bac-project">
-   <div className="feature-label mono"><span>02 / Web application</span><span>Education technology</span></div>
-   <div className="bac-cover"><div className="bac-brand"><span className="mono">An educational resource platform</span><strong>Bac<span>—</span><br/>pedia.</strong><span className="mono">Student / contributor / curator</span></div><div className="bac-schema"><div className="mono">Platform architecture / Overview</div><div className="schema-layer"><span>Student</span><span>Contributor</span><span>Admin</span></div><div className="schema-line" aria-hidden="true"/><div className="schema-box">Vite multi-page frontend</div><div className="schema-line" aria-hidden="true"/><div className="schema-layer"><span>Supabase<br/>Auth + data</span><span>Cloudflare<br/>Worker</span></div><small>Conceptual overview based on project documentation.</small></div></div>
-   <div className="feature-description"><div><span className="mono accent">BAC-PEDIA 26</span><h3>Learning resources,<br/>organized by role.</h3></div><div><p>A web platform for educational resources, with distinct student, contributor and administrator experiences. Its public repository documents learning materials, resource review, authentication and access control.</p><div className="project-tech mono">Vite · JavaScript · Supabase · Cloudflare</div><a className="textlink" href="https://github.com/boukhariabdallahyasser-prog/Bac-pedia26">Explore the source code ↗</a></div></div>
- </article>
- </div></section>
+ <motion.div className="b-section-title" initial={reduce?false:{opacity:0,y:22}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.45}} transition={{duration:.55}}><span>03 / PROJECTS</span><h2>Selected <em>work.</em></h2><p>Explore a project to discover the story, design and technology behind it.</p></motion.div>
+ <div className="project-gallery">{projects.map((project,i)=><motion.article key={project.id} initial={reduce?false:{opacity:0,y:35}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.22}} transition={{duration:.6,delay:reduce?0:i*.12}} className="project-tile">
+ <button className="project-cover-button" onClick={e=>{trigger.current=e.currentTarget;setSelected(project)}} aria-label={'Open '+project.name+' project details'} onPointerMove={e=>{if(reduce||e.pointerType!=='mouse')return;const el=e.currentTarget,r=el.getBoundingClientRect();el.style.setProperty('--px',((e.clientX-r.left)/r.width*100)+'%');el.style.setProperty('--py',((e.clientY-r.top)/r.height*100)+'%')}}>
+ <img src={project.image} alt={project.alt} width="1200" height="750" loading="lazy"/><span className="project-card-gloss"/><span className="project-open-label"><span>View project</span><b aria-hidden="true">↗</b></span>
+ </button><div className="project-card-caption"><div><h3>{project.name}</h3><p>{project.category}</p></div><button onClick={e=>{trigger.current=e.currentTarget;setSelected(project)}} className="project-caption-open" aria-label={'View '+project.name+' details'}>↗</button></div>
+ </motion.article>)}</div>
+ </div>
+ <dialog className="project-dialog" ref={dialog} aria-labelledby="project-title" onCancel={e=>{e.preventDefault();close()}} onClick={e=>{if(e.target===dialog.current)close()}}>
+ {selected&&<motion.article className="project-detail" initial={reduce?false:{opacity:0,y:20,scale:.98}} animate={{opacity:1,y:0,scale:1}} transition={{duration:reduce?0:.28}}>
+ <div className="project-detail-top"><span className="mono">YZR / PROJECT DETAILS</span><button className="project-close" onClick={close} aria-label="Close project details" autoFocus>×</button></div>
+ <img className="project-detail-image" src={selected.image} alt={selected.alt} width="1200" height="750"/><div className="project-detail-body"><span className="mono accent">{selected.category}</span><h2 id="project-title">{selected.name}</h2><p className="project-detail-summary">{selected.summary}</p>
+ <div className="project-detail-sections">{selected.sections.map(s=><section key={s.title}><h3>{s.title}</h3><p>{s.body}</p></section>)}</div>
+ {selected.stack.length>0&&<div className="project-detail-stack"><h3>Technology</h3><div>{selected.stack.map(t=><span key={t}>{t}</span>)}</div></div>}
+ {selected.link&&<a className="b-primary" href={selected.link} target="_blank" rel="noreferrer">View GitHub repository <span>↗</span></a>}<p className="project-art-note">Cover image: original conceptual artwork.</p></div></motion.article>}
+ </dialog></section>
 }
