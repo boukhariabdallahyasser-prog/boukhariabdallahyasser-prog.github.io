@@ -13,6 +13,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,6 +24,24 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm test
       - run: npm run build
+      - name: Stamp exact release
+        run: node scripts/stamp-release.mjs
+      - name: Synchronize branch-hosted fallback with the React build
+        run: |
+          mkdir -p assets projects
+          cp dist/index.html index.html
+          cp dist/yzr-logo.svg yzr-logo.svg
+          cp dist/release.json release.json
+          cp dist/.nojekyll .nojekyll
+          cp -R dist/assets/. assets/
+          cp -R dist/projects/. projects/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html yzr-logo.svg release.json .nojekyll assets projects
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish compiled YZR fallback [skip ci]"
+            git push origin HEAD:main
+          fi
       - uses: actions/configure-pages@v5
         with:
           enablement: true
@@ -37,3 +58,23 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify the public site serves this exact release
+        env:
+          SITE: https://boukhariabdallahyasser-prog.github.io
+        run: |
+          for attempt in $(seq 1 12); do
+            if curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?release=$GITHUB_SHA-$attempt" -o /tmp/live.html &&
+               grep -Fq "content=\"$GITHUB_SHA\"" /tmp/live.html &&
+               curl -fsSL --max-time 15 "$SITE/release.json?release=$GITHUB_SHA-$attempt" -o /tmp/release.json &&
+               grep -Fq "$GITHUB_SHA" /tmp/release.json; then
+              echo "Verified live React release: $GITHUB_SHA"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Public URL did not return the expected release"
+          exit 1
