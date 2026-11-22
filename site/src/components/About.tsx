@@ -1,0 +1,5 @@
+export default function About() {
+  return (
+<section id="about" className="content"><div className="wrap"><div className="sectionhead"><span className="mono accent">01 / About</span><h2>Between disciplines.</h2></div><div className="aboutgrid"><div className="aboutmark"><span className="mono muted">Fig. 02 / Structure</span><svg viewBox="0 0 200 130" aria-hidden="true"><path d="M10 65 65 10 135 10 190 65 135 120 65 120Z M10 65H190 M65 10 135 120 M135 10 65 120 M65 10V120 M135 10V120"/><circle cx="100" cy="65" r="5"/><circle cx="65" cy="10" r="2"/><circle cx="135" cy="120" r="2"/></svg></div><div><p className="copy">I like understanding how things work — and finding ways to make them work better.</p><p className="detail">I'm studying at the National Higher School of Artificial Intelligence (ENSIA) in Algeria. My interests span programming, interface design, software architecture and the systems that make digital products possible. Graphic design gives me another way to think about structure, communication and the experience of using technology.</p></div></div></div></section>
+  );
+}
