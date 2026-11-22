@@ -15,15 +15,14 @@ export function answer(q:string):Message{
 }
 export default function PortfolioGuide({open,onClose,onSpeak}:{open:boolean;onClose:()=>void;onSpeak:()=>void}){
  const [messages,setMessages]=useState<Message[]>([{role:'guide',text:"Hi! I'm YZR, Abdallah's portfolio guide. What would you like to explore?"}]);
- const [input,setInput]=useState('');const [thinking,setThinking]=useState(false);const timer=useRef<ReturnType<typeof setTimeout>|null>(null);const end=useRef<HTMLDivElement>(null);const dialog=useRef<HTMLDialogElement>(null);
+ const [input,setInput]=useState('');const end=useRef<HTMLDivElement>(null);const dialog=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const d=dialog.current;if(!d)return;if(open&&!d.open)d.showModal();else if(!open&&d.open)d.close()},[open]);
  useEffect(()=>{if(open)end.current?.scrollIntoView({block:'nearest'})},[messages,open]);
- useEffect(()=>()=>{if(timer.current)clearTimeout(timer.current)},[]);
- function send(text:string){const q=text.trim();if(!q||thinking)return;setMessages(m=>[...m,{role:'visitor',text:q}]);setInput('');setThinking(true);onSpeak();const delay=matchMedia('(prefers-reduced-motion: reduce)').matches?0:420;timer.current=setTimeout(()=>{setMessages(m=>[...m,answer(q)]);setThinking(false)},delay);}
- return <dialog ref={dialog} className="b-guide" onCancel={onClose} onClick={e=>{if(e.target===dialog.current)onClose()}}>
+ function send(text:string){const q=text.trim();if(!q)return;setMessages(m=>[...m,{role:'visitor',text:q},answer(q)]);setInput('');onSpeak();}
+ return <dialog ref={dialog} className="b-guide" aria-label="YZR portfolio guide" onCancel={e=>{e.preventDefault();onClose()}} onClick={e=>{if(e.target===dialog.current)onClose()}}>
   <div className="b-guide-head"><span className="b-mini-orb" aria-hidden="true"><i/><i/></span><div><b>YZR</b><small>Portfolio guide · Local FAQ</small></div><button type="button" onClick={onClose} aria-label="Close guide">×</button></div>
-  <div className="b-messages" role="log" aria-live="polite">{messages.map((m,i)=><div className={'b-msg '+m.role} key={i}><p>{m.text}</p>{m.link&&<a href={m.link} onClick={m.link.startsWith('#')?onClose:undefined}>{m.label} ↗</a>}</div>)}{thinking&&<div className="guide-thinking" aria-label="Preparing answer"><i/><i/><i/></div>}<div ref={end}/></div>
-  <div className="b-questions">{questions.map(q=><button type="button" key={q} disabled={thinking} onClick={()=>send(q)}>{q}</button>)}</div>
-  <form className="b-chat-form" onSubmit={e=>{e.preventDefault();send(input)}}><input autoFocus value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask about the portfolio…" aria-label="Question" maxLength={300}/><button type="submit" disabled={!input.trim()||thinking} aria-label="Send question">↗</button></form>
+  <div className="b-messages" role="log" aria-live="polite">{messages.map((m,i)=><div className={'b-msg '+m.role} key={i}><p>{m.text}</p>{m.link&&<a href={m.link} onClick={m.link.startsWith('#')?onClose:undefined}>{m.label} ↗</a>}</div>)}<div ref={end}/></div>
+  <div className="b-questions">{questions.map(q=><button type="button" key={q} onClick={()=>send(q)}>{q}</button>)}</div>
+  <form className="b-chat-form" onSubmit={e=>{e.preventDefault();send(input)}}><input value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask about the portfolio…" aria-label="Question" maxLength={300}/><button type="submit" disabled={!input.trim()} aria-label="Send question">↗</button></form>
  </dialog>;
 }

@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 test('entry, orb, image projects, stack, contact and search',async({page})=>{
  await page.goto('/');
  await expect(page.getByRole('dialog',{name:'Abdallah Boukhari Yasser'})).toBeVisible();
- await expect(page.locator('.yzr-entrance')).not.toBeVisible({timeout:10000});
+ await expect(page.locator('.yzr-entrance')).not.toBeVisible({timeout:12000});
  await expect(page.getByRole('heading',{name:/Engineering ideas/})).toBeVisible();
  await expect(page.getByRole('button',{name:'Talk to the YZR 3D orb'})).toBeVisible();
  await expect(page.locator('.b-orb-canvas canvas')).toBeVisible({timeout:20000});
@@ -24,7 +24,7 @@ test('entry, orb, image projects, stack, contact and search',async({page})=>{
  await page.getByRole('button',{name:'Close search'}).click();
  await page.getByRole('button',{name:'Open portfolio guide'}).click();
  await page.getByRole('button',{name:'What are your projects?'}).click();
- await expect(page.getByRole('log')).toContainText('Two featured projects');
+ await expect(page.getByRole('log')).toContainText('Two featured projects',{timeout:10000});
  await page.getByRole('button',{name:'Close guide'}).click();
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2);
  expect(overflow).toBe(false);

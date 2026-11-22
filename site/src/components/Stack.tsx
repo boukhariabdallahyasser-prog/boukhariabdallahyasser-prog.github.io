@@ -3,6 +3,8 @@ import { motion,useReducedMotion } from 'motion/react';
 import { ChevronLeft,ChevronRight,Pause,Play } from 'lucide-react';
 import {groups,type StackItem} from '../data/stack';
 function Mark({item}:{item:StackItem}){
+ if(item.name==='HTML'||item.name==='CSS')return <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 2h20l-2 19-8 2-8-2z"/><path fill="#f7f8fa" d={item.name==='HTML'?'M6 6h12l-.3 3H9l.2 2h8l-.8 7-4.5 1.3L7.5 18l-.3-3h3l.1 1 1.6.5 1.8-.5.2-2H7z':'M6 6h12l-1 3-4 2h4l-.6 7-4.4 1.3L7.5 18l-.3-3h3l.1 1 1.7.5 1.8-.5.2-2H7l.2-3 5-2H6z'}/></svg>;
+ if(item.name==='JavaScript'||item.name==='TypeScript')return <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="2" fill="currentColor"/><text x="22" y="21" textAnchor="end" fontFamily="Arial,sans-serif" fontWeight="bold" fontSize="11" fill={item.name==='JavaScript'?'#151515':'#fff'}>{item.mark}</text></svg>;
  if(item.mark==='react')return <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="2" fill="currentColor"/>{[0,60,120].map(r=><ellipse key={r} rx="10" ry="4.1" transform={'rotate('+r+')'} fill="none" stroke="currentColor" strokeWidth="1.2"/>)}</svg>;
  if(item.mark==='figma')return <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#f24e1e" d="M8 2h4v7H8a3.5 3.5 0 0 1 0-7"/><path fill="#ff7262" d="M12 2h4a3.5 3.5 0 0 1 0 7h-4"/><path fill="#a259ff" d="M8 9h4v7H8a3.5 3.5 0 0 1 0-7"/><circle fill="#1abcfe" cx="15.5" cy="12.5" r="3.5"/><path fill="#0acf83" d="M8 16h4v3.5A3.5 3.5 0 1 1 8 16"/></svg>;
  if(item.mark==='node')return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 21 7v10l-9 5-9-5V7Z" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M9 8v7c0 2-2 2-3 1m10-7c-3-2-5 1-2 3s0 5-3 3" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
@@ -28,7 +30,7 @@ function Rail({items,index,paused}:{items:StackItem[];index:number;paused:boolea
 export default function Stack(){
  const reduce=useReducedMotion();const [paused,setPaused]=useState(false);const stopped=paused||!!reduce;
  return <section className="b-section b-stack-section sliding-stack-section" id="skills"><div className="b-shell">
- <motion.div className="b-section-title" initial={reduce?false:{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.3}} transition={{duration:.5}}><span>03 / TECH STACK</span><h2>Powered by <em>technology.</em></h2><p>Languages, tools, frameworks and the technologies behind my projects.</p></motion.div>
+ <motion.div className="b-section-title" initial={reduce?false:{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.3}} transition={{duration:.5}}><span>03 / TECH STACK</span><h2>My toolkit.<br/><em>Always evolving.</em></h2><p>Languages, tools, frameworks and the technologies behind my projects.</p></motion.div>
  <div className="stack-slider-toolbar"><span className="mono">TECHNOLOGY / {all.length} TOOLS &amp; SKILLS</span>{!reduce&&<button className="stack-play" type="button" aria-pressed={paused} onClick={()=>setPaused(p=>!p)}>{paused?<Play size={14}/>:<Pause size={14}/>} {paused?'Play slides':'Pause slides'}</button>}</div>
  </div><div className="tech-slides">{rows.map((items,index)=><Rail key={index} items={items} index={index} paused={stopped}/>)}</div>
  <div className="b-shell"><p className="stack-subnote">A mix of academic foundations, current learning, project technologies and tools powering this portfolio.</p></div></section>
