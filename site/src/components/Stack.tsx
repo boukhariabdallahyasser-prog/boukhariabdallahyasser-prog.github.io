@@ -1,5 +1,6 @@
-import { useState,type CSSProperties } from 'react';
-import { motion,AnimatePresence,useReducedMotion } from 'motion/react';
+import { useRef,useState,type CSSProperties } from 'react';
+import { motion,useReducedMotion } from 'motion/react';
+import { ChevronLeft,ChevronRight,Pause,Play } from 'lucide-react';
 import {groups,type StackItem} from '../data/stack';
 function Mark({item}:{item:StackItem}){
  if(item.mark==='react')return <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="2" fill="currentColor"/>{[0,60,120].map(r=><ellipse key={r} rx="10" ry="4.1" transform={'rotate('+r+')'} fill="none" stroke="currentColor" strokeWidth="1.2"/>)}</svg>;
@@ -11,15 +12,24 @@ function Mark({item}:{item:StackItem}){
  if(item.mark==='cloud')return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18a4 4 0 0 1-1-8 7 7 0 0 1 13-1 5 5 0 0 1 0 9Z" fill="none" stroke="currentColor" strokeWidth="1.6"/></svg>;
  return <b className="tech-letters">{item.mark}</b>
 }
+const all=groups.flatMap(g=>g.items);
+const rows=[all.filter((_,i)=>i%2===0),all.filter((_,i)=>i%2!==0)];
+function Rail({items,index,paused}:{items:StackItem[];index:number;paused:boolean}){
+ const rail=useRef<HTMLDivElement>(null);
+ function shift(direction:number){const el=rail.current;if(el)el.scrollBy({left:direction*Math.min(el.clientWidth*.75,440),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}
+ return <div className={'sliding-tech-row row-'+index}>
+  {paused&&<button className="tech-arrow left" type="button" aria-label={'Scroll technology row '+(index+1)+' left'} onClick={()=>shift(-1)}><ChevronLeft size={19}/></button>}
+  <div ref={rail} className={'tech-rail v11-rail'+(paused?' paused':'')} tabIndex={0} aria-label={'Technology slide row '+(index+1)}>
+   <div className="tech-track v11-track">{[0,1].map(copy=><div className="tech-sequence" key={copy} aria-hidden={copy===1?true:undefined}>{items.map(item=><div className="sliding-tech-item" key={item.name} style={{'--tech-color':item.color} as CSSProperties} title={item.note+' · '+item.status}><span className="sliding-tech-mark"><Mark item={item}/></span><span>{item.name}</span></div>)}</div>)}</div>
+  </div>
+  {paused&&<button className="tech-arrow right" type="button" aria-label={'Scroll technology row '+(index+1)+' right'} onClick={()=>shift(1)}><ChevronRight size={19}/></button>}
+ </div>
+}
 export default function Stack(){
- const [tab,setTab]=useState(0);const reduce=useReducedMotion();const items=groups[tab].items;const [paused,setPaused]=useState(false);const showcase=groups.flatMap(g=>g.items).filter(i=>['React','JavaScript','TypeScript','Node.js','Vite','Figma','Three.js','GitHub','Supabase','Cloudflare','C++','Motion','GSAP','WebGL / GLSL','Playwright'].includes(i.name));
- return <section className="b-section b-stack-section" id="skills"><div className="b-shell">
- <div className="b-section-title"><span>03 / TECH STACK</span><h2>Tools of the <em>trade.</em></h2><p>Programming, design, infrastructure and the technology behind this experience.</p></div>
- <div className="tech-showcase"><div className="tech-showcase-toolbar"><span className="mono">TECHNOLOGY IN MOTION</span><button type="button" aria-pressed={paused} onClick={()=>setPaused(p=>!p)}>{paused?'Play':'Pause'} <span aria-hidden="true">{paused?'▶':'Ⅱ'}</span></button></div><div className={'tech-rail'+(paused||reduce?' paused':'')} tabIndex={0} aria-label="Featured technologies; scroll horizontally"><div className="tech-track">{[0,1].map(copy=><div className="tech-sequence" key={copy} aria-hidden={copy===1?true:undefined}>{showcase.map(item=><div className="tech-showcase-item" key={item.name} style={{'--tech-color':item.color} as CSSProperties}><span className="tech-showcase-icon"><Mark item={item}/></span><span>{item.name}</span></div>)}</div>)}</div></div></div>
- <div className="b-stack-tabs" role="group" aria-label="Technology categories">{groups.map((g,i)=><button key={g.name} type="button" aria-pressed={i===tab} onClick={()=>setTab(i)}>{g.name}</button>)}</div>
- <AnimatePresence mode="wait" initial={false}><motion.div key={groups[tab].name} className="b-stack-grid expanded-stack" initial={reduce?false:{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={reduce?{opacity:1}:{opacity:0,y:-8}} transition={{duration:reduce?0:.23}}>
- {items.map((item,i)=><motion.div key={item.name} className="b-stack-item tech-tile" style={{'--tech-color':item.color} as CSSProperties} initial={reduce?false:{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:reduce?0:.3,delay:reduce?0:i*.035}} whileHover={reduce?undefined:{y:-4}}><span className="tech-icon" aria-hidden="true"><Mark item={item}/></span><div><b>{item.name}</b><small>{item.note}</small></div><span className="tech-status" data-status={item.status}>{item.status}</span></motion.div>)}
- </motion.div></AnimatePresence>
- <p className="stack-legend">Core = listed skills or academic foundations · Exploring = current learning · Project = technology documented in Bac-pedia · Site = technology used on this portfolio.</p>
- </div></section>
+ const reduce=useReducedMotion();const [paused,setPaused]=useState(false);const stopped=paused||!!reduce;
+ return <section className="b-section b-stack-section sliding-stack-section" id="skills"><div className="b-shell">
+ <motion.div className="b-section-title" initial={reduce?false:{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.3}} transition={{duration:.5}}><span>03 / TECH STACK</span><h2>Powered by <em>technology.</em></h2><p>Languages, tools, frameworks and the technologies behind my projects.</p></motion.div>
+ <div className="stack-slider-toolbar"><span className="mono">TECHNOLOGY / {all.length} TOOLS &amp; SKILLS</span>{!reduce&&<button className="stack-play" type="button" aria-pressed={paused} onClick={()=>setPaused(p=>!p)}>{paused?<Play size={14}/>:<Pause size={14}/>} {paused?'Play slides':'Pause slides'}</button>}</div>
+ </div><div className="tech-slides">{rows.map((items,index)=><Rail key={index} items={items} index={index} paused={stopped}/>)}</div>
+ <div className="b-shell"><p className="stack-subnote">A mix of academic foundations, current learning, project technologies and tools powering this portfolio.</p></div></section>
 }

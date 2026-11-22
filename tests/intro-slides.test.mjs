@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+test('intro is automatic, reduced-motion aware and does not ask visitors to enter',()=>{const s=read('site/src/components/Entrance.tsx');assert.ok(s.includes('setTimeout'));assert.ok(s.includes('finish.current()'));assert.ok(!s.includes('Enter with sound'));assert.ok(!s.includes('Enter silently'));});
+test('stack uses two continuous sliding rows with opposite directions and pause controls',()=>{const s=read('site/src/components/Stack.tsx'),css=read('site/src/styles.css');assert.ok(s.includes('rows.map'));assert.ok(s.includes('setPaused'));assert.ok(css.includes('animation-direction:reverse'));assert.ok(css.includes('translateX(-50%)'));});

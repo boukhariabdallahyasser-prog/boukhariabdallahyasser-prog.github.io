@@ -1,5 +1,7 @@
 import { useState,useRef,useEffect } from 'react';
 import Hero from './components/Hero';
+// Preload the main 3D scene while the automatic intro plays.
+const preloadOrb=()=>import('./components/Orb').catch(()=>undefined);
 import ScrollEffects from './components/ScrollEffects';
 import CinematicMotion from './components/CinematicMotion';
 import QuickNav from './components/QuickNav';
@@ -12,13 +14,14 @@ import Contact from './components/Contact';
 import PortfolioGuide from './components/PortfolioGuide';
 export default function App(){
  const [open,setOpen]=useState(false),[sound,setSound]=useState(false),[speaking,setSpeaking]=useState(false);
- const [entered,setEntered]=useState(()=>{try{return sessionStorage.getItem('yzr-entered')==='1'}catch{return false}});
+ const [entered,setEntered]=useState(()=>{try{return sessionStorage.getItem('yzr-intro-v11')==='1'}catch{return false}});
+ useEffect(()=>{void preloadOrb()},[]);
  const audio=useRef<AudioContext|null>(null),timer=useRef<ReturnType<typeof setTimeout>|null>(null);
  function tone(force=false){if(!sound&&!force)return;try{const ctx=audio.current??new AudioContext();audio.current=ctx;void ctx.resume().catch(()=>{});const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.setValueAtTime(520,ctx.currentTime);osc.frequency.exponentialRampToValueAtTime(740,ctx.currentTime+.12);gain.gain.setValueAtTime(.001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.06,ctx.currentTime+.015);gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.2);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.21);}catch{/* optional audio */}}
- function enter(withSound:boolean){setSound(withSound);setEntered(true);try{sessionStorage.setItem('yzr-entered','1')}catch{/* storage optional */}if(withSound){tone(true);try{const ctx=audio.current;if(ctx){[196,293.66,392,587.33].forEach((freq,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();const t=ctx.currentTime+.08+i*.105;o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.035,t+.055);g.gain.exponentialRampToValueAtTime(.001,t+.65);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+.67)})}}catch{/* optional audio */}}}
+ function enter(){setEntered(true);try{sessionStorage.setItem('yzr-intro-v11','1')}catch{/* optional storage */}if(sound)tone()}
  function speak(){tone();setSpeaking(true);if(timer.current)clearTimeout(timer.current);timer.current=setTimeout(()=>setSpeaking(false),1600)}
  function showGuide(){setOpen(true);speak()}
- function replay(){setOpen(false);setEntered(false);window.scrollTo({top:0,behavior:'instant'});try{sessionStorage.removeItem('yzr-entered')}catch{/* optional storage */}}
+ function replay(){setOpen(false);setEntered(false);window.scrollTo({top:0,behavior:'instant'});try{sessionStorage.removeItem('yzr-intro-v11')}catch{/* optional storage */}}
  useEffect(()=>()=>{if(timer.current)clearTimeout(timer.current);if(audio.current&&audio.current.state!=='closed')void audio.current.close().catch(()=>{});audio.current=null},[]);
  useEffect(()=>{if(!sound||!entered)return;const onClick=(e:MouseEvent)=>{const t=e.target;if(t instanceof Element&&t.closest('.project-cover-button,.project-caption-open,.b-stack-tabs button,.transmission-trigger,.b-primary,.tech-showcase-toolbar button'))tone()};document.addEventListener('click',onClick);return()=>document.removeEventListener('click',onClick)},[sound,entered]);
  return <div className={'living-site'+(entered?' is-entered':' awaiting-entry')}><a className="skip" href="#main">Skip to content</a>
